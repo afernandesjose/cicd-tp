@@ -7,6 +7,7 @@
     nginx_port: 8080
     ssl_enabled: false
     cache_no_store: true
+    cache_duration: "1d"
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt

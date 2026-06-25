@@ -15,11 +15,12 @@ RUN mkdir -p /var/run/sshd && \
     echo 'AllowUsers ynov' >> /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
-# RUN mkdir -p /home/ynov/.ssh add your own ssh key here
-# COPY authorized_keys /home/ynov/.ssh/authorized_keys
-# RUN chown -R ynov:ynov /home/ynov/.ssh && \
-#     chmod 700 /home/ynov/.ssh && \
-#     chmod 600 /home/ynov/.ssh/authorized_keys
+# Réactivation de l'intégration de la clé SSH
+RUN mkdir -p /home/ynov/.ssh
+COPY authorized_keys /home/ynov/.ssh/authorized_keys
+RUN chown -R ynov:ynov /home/ynov/.ssh && \
+     chmod 700 /home/ynov/.ssh && \
+     chmod 600 /home/ynov/.ssh/authorized_keys
 
 EXPOSE 22
 EXPOSE 80

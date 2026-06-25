@@ -7,7 +7,7 @@
     nginx_port: 8080
     ssl_enabled: false
     cache_no_store: true
-    cache_duration: "24h"
+    cache_duration: "max"
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt
@@ -15,14 +15,6 @@
         name: nginx
         state: present
         update_cache: true
-
-    - name: Nettoyer les anciennes configurations Nginx potentiellement corrompues
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: absent
-      with_items:
-        - /etc/nginx/sites-available/olympic-games.conf
-        - /etc/nginx/sites-enabled/olympic-games.conf
 
     - name: Créer le répertoire pour l'application Angular
       ansible.builtin.file:
@@ -55,11 +47,13 @@
         state: absent
       notify: Redémarrer Nginx
 
-    - name: S'assurer que Nginx est démarré et persiste dans Docker
-      ansible.builtin.command: nginx
+    - name: S'assurer que Nginx est démarré (via script init d'origine)
+      ansible.builtin.command: /etc/init.d/nginx start
+      failed_when: false
       changed_when: true
 
   handlers:
     - name: Redémarrer Nginx
-      ansible.builtin.command: nginx -s reload
+      ansible.builtin.command: /etc/init.d/nginx restart
+      failed_when: false
       changed_when: true

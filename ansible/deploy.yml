@@ -1,65 +1,57 @@
 ---
 - name: YNOV TP 2 deployment
   hosts: all
-  become: yes
-
-  # Déclaration des variables Jinja2 requises
+  become: true
   vars:
+    apps_dir: /var/www/html/olympic-games
     nginx_port: 8080
-    cache_duration: "1y"
-    cache_no_store: "-1y"
-    ssl_enabled: false
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt
-      apt:
+      ansible.builtin.apt:
         name: nginx
         state: present
-        update_cache: yes
+        update_cache: true
 
     - name: Créer le répertoire pour l'application Angular
-      file:
-        path: /var/www/html/olympic-games-starter
+      ansible.builtin.file:
+        path: "{{ apps_dir }}"
         state: directory
         mode: '0755'
-        owner: www-data
-        group: www-data
 
     - name: Copier les fichiers de l'application Angular
-      copy:
+      ansible.builtin.copy:
         src: app/olympic-games-starter/
-        dest: /var/www/html/olympic-games-starter/
+        dest: "{{ apps_dir }}/"
         mode: '0644'
 
-    # MODIFICATION ICI : Utilisation du module "template" et du fichier ".j2"
     - name: Générer le fichier de configuration Nginx depuis le template Jinja2
-      template:
+      ansible.builtin.template:
         src: nginx/app.conf.j2
-        dest: /etc/nginx/sites-available/app.conf
+        dest: /etc/nginx/sites-available/olympic-games.conf
         mode: '0644'
       notify: Redémarrer Nginx
 
     - name: Activer le site dans sites-enabled
-      file:
-        src: /etc/nginx/sites-available/app.conf
-        dest: /etc/nginx/sites-enabled/app.conf
+      ansible.builtin.file:
+        src: /etc/nginx/sites-available/olympic-games.conf
+        dest: /etc/nginx/sites-enabled/olympic-games.conf
         state: link
-      notify: Redémarrer Nginx
 
     - name: Désactiver le site par défaut de Nginx
-      file:
+      ansible.builtin.file:
         path: /etc/nginx/sites-enabled/default
         state: absent
       notify: Redémarrer Nginx
 
     - name: S'assurer que Nginx est démarré et activé
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
   handlers:
     - name: Redémarrer Nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: restarted

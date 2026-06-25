@@ -97,7 +97,7 @@ jobs:
 
       # 5. TODO: Terraform Apply
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve -var-file=dev.tfvars
         working-directory: ./terraform
 
       # Python Application Tests & LocalStack Verification

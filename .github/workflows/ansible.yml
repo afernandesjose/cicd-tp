@@ -16,10 +16,12 @@ jobs:
       # MANAGED NODE — Docker container acting as the remote SSH target
       ##########################################################################
 
-      - name: Generate SSH key pair
+      运营 - name: Generate SSH key pair
         run: |
           mkdir -p ~/.ssh
           ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ''
+          chmod 600 ~/.ssh/id_rsa
+          chmod 644 ~/.ssh/id_rsa.pub
           cp ~/.ssh/id_rsa.pub ./ansible/authorized_keys
 
       - name: Build managed node image
@@ -69,8 +71,6 @@ jobs:
         with:
           directory: ./ansible
           framework: ansible
-          output_format: cli,sarif
-          output_file_path: console,results.sarif
 
       - name: Checkov Report
         id: checkov-report
@@ -99,7 +99,7 @@ jobs:
 
       - name: Verify Nginx serves HTTP traffic
         run: |
-          curl -f http://localhost:8080 or --write-out '%{http_code}'
+          curl -f http://localhost:8080
 
       ##########################################################################
       # REPORT

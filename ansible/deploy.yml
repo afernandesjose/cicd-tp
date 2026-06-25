@@ -7,7 +7,7 @@
     nginx_port: 8080
     ssl_enabled: false
     cache_no_store: true
-    cache_duration: "3600"
+    cache_duration: "24h"
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt
@@ -15,6 +15,14 @@
         name: nginx
         state: present
         update_cache: true
+
+    - name: Nettoyer les anciennes configurations Nginx potentiellement corrompues
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /etc/nginx/sites-available/olympic-games.conf
+        - /etc/nginx/sites-enabled/olympic-games.conf
 
     - name: Créer le répertoire pour l'application Angular
       ansible.builtin.file:

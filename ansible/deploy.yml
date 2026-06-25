@@ -6,6 +6,7 @@
     apps_dir: /var/www/html/olympic-games
     nginx_port: 8080
     ssl_enabled: false
+    cache_no_store: true
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt

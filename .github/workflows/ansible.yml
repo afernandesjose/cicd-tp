@@ -29,7 +29,7 @@ jobs:
 
       - name: Start managed node container
         run: |
-          docker run -d --name managed-node -p 2222:22 managed-node
+          docker run -d --name managed-node -p 2222:22 -p 8080:80 managed-node
 
       - name: Wait for SSH to be ready
         run: |

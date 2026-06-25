@@ -29,7 +29,7 @@ jobs:
 
       - name: Start managed node container
         run: |
-          docker run -d --name managed-node -p 2222:22 -p 8080:80 managed-node
+          docker run -d --name managed-node -p 2222:22 -p 8080:8080 managed-node
 
       - name: Wait for SSH to be ready
         run: |
@@ -61,9 +61,8 @@ jobs:
 
       - name: Ansible Lint
         id: lint
-        run: ansible-lint deploy.yml > lint-report.txt
+        run: ansible-lint deploy.yml > lint-report.txt || true
         working-directory: ./ansible
-        continue-on-error: true
 
       - name: Checkov - Ansible Security Scan
         id: checkov
@@ -99,7 +98,7 @@ jobs:
 
       - name: Verify Nginx serves HTTP traffic
         run: |
-          curl -f http://localhost:8080
+          curl -f http://127.0.0.1:8080
 
       ##########################################################################
       # REPORT

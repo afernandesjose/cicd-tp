@@ -16,7 +16,7 @@ jobs:
       # MANAGED NODE — Docker container acting as the remote SSH target
       ##########################################################################
 
-      运营 - name: Generate SSH key pair
+      - name: Generate SSH key pair
         run: |
           mkdir -p ~/.ssh
           ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ''

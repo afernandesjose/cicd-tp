@@ -7,7 +7,7 @@
     nginx_port: 8080
     ssl_enabled: false
     cache_no_store: true
-    cache_duration: "1d"
+    cache_duration: "3600"
 
   tasks:
     - name: Installer Nginx et mettre à jour le cache apt
@@ -47,14 +47,14 @@
         state: absent
       notify: Redémarrer Nginx
 
-    - name: S'assurer que Nginx est démarré et persiste dans Docker
-      ansible.builtin.shell: |
-        if ! pgrep nginx > /dev/null; then
-          nginx -g "daemon on;"
-        fi
-      changed_when: true
+    - name: S'assurer que Nginx est démarré et activé
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
 
   handlers:
     - name: Redémarrer Nginx
-      ansible.builtin.shell: nginx -s reload
-      changed_when: true
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

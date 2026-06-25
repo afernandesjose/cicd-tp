@@ -47,14 +47,11 @@
         state: absent
       notify: Redémarrer Nginx
 
-    - name: S'assurer que Nginx est démarré et activé
-      ansible.builtin.service:
-        name: nginx
-        state: started
-        enabled: true
+    - name: S'assurer que Nginx est démarré et persiste dans Docker
+      ansible.builtin.command: nginx
+      changed_when: true
 
   handlers:
     - name: Redémarrer Nginx
-      ansible.builtin.service:
-        name: nginx
-        state: restarted
+      ansible.builtin.command: nginx -s reload
+      changed_when: true

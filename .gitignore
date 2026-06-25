@@ -1,0 +1,10 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!dev.tfvars
+.terraform.lock.hcl
+tfplan
+__MACOSX/
+.DS_Store

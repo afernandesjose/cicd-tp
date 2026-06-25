@@ -1,0 +1,65 @@
+---
+- name: YNOV TP 2 deployment
+  hosts: all
+  become: yes
+
+  # Déclaration des variables Jinja2 requises
+  vars:
+    nginx_port: 8080
+    cache_duration: "1y"
+    cache_no_store: "-1y"
+    ssl_enabled: false
+
+  tasks:
+    - name: Installer Nginx et mettre à jour le cache apt
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Créer le répertoire pour l'application Angular
+      file:
+        path: /var/www/html/olympic-games-starter
+        state: directory
+        mode: '0755'
+        owner: www-data
+        group: www-data
+
+    - name: Copier les fichiers de l'application Angular
+      copy:
+        src: app/olympic-games-starter/
+        dest: /var/www/html/olympic-games-starter/
+        mode: '0644'
+
+    # MODIFICATION ICI : Utilisation du module "template" et du fichier ".j2"
+    - name: Générer le fichier de configuration Nginx depuis le template Jinja2
+      template:
+        src: nginx/app.conf.j2
+        dest: /etc/nginx/sites-available/app.conf
+        mode: '0644'
+      notify: Redémarrer Nginx
+
+    - name: Activer le site dans sites-enabled
+      file:
+        src: /etc/nginx/sites-available/app.conf
+        dest: /etc/nginx/sites-enabled/app.conf
+        state: link
+      notify: Redémarrer Nginx
+
+    - name: Désactiver le site par défaut de Nginx
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      notify: Redémarrer Nginx
+
+    - name: S'assurer que Nginx est démarré et activé
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+  handlers:
+    - name: Redémarrer Nginx
+      service:
+        name: nginx
+        state: restarted
